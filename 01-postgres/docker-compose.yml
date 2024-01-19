@@ -1,0 +1,25 @@
+version: '3.9'
+services:
+  postgres:
+    image: postgres:16
+    ports:
+      - 5432:5432
+    # Uncomment to make changes in DB persistent
+    #volumes:
+    #  - ./volumes/postgres:/var/lib/postgresql/data
+    env_file:
+      - .env
+  migrations:
+    image: flyway/flyway:latest
+    command: -locations=filesystem:/flyway/sql -connectRetries=60 migrate
+    volumes:
+      - ./migrations:/flyway/sql
+    env_file:
+      - .env
+    environment:
+      - FLYWAY_USER=${POSTGRES_USER}
+      - FLYWAY_PASSWORD=${POSTGRES_PASSWORD}
+      - FLYWAY_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      - FLYWAY_SCHEMAS=flyway,${POSTGRES_SCHEMA}
+    depends_on:
+      - postgres
