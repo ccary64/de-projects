@@ -5,7 +5,7 @@ import os
 def get_s3_client(username=None, password=None, url=None):
     return boto3.client(
         "s3",
-        endpoint_url=url or f"http://minio:9000",
+        endpoint_url=url or os.getenv("S3_URL"),
         aws_access_key_id=username or os.getenv("MINIO_ROOT_USER"),
         aws_secret_access_key=password or os.getenv("MINIO_ROOT_PASSWORD"),
         verify=False,
