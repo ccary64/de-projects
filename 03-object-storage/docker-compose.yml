@@ -6,7 +6,22 @@ services:
     ports:
       - "9000:9000"
       - "9001:9001"
-    environment:
-      MINIO_ROOT_USER: fake_user
-      MINIO_ROOT_PASSWORD: Strong#Pass#2022
+    env_file:
+      - .env
     command: server --console-address ":9001" /data
+  upload:
+    image: python:latest
+    command:
+      - /bin/bash
+      - -c
+      - |
+        pip install boto3
+        python upload.py
+    working_dir: /srv
+    volumes:
+      - ./upload.py:/srv/upload.py
+      - ./data:/srv/data
+    env_file:
+      - .env
+    depends_on:
+      - minio
