@@ -1,9 +1,13 @@
 version: '3.9'
 services:
   postgres:
-    image: postgres:16
+    image: postgres
     ports:
       - 5432:5432
+    command:
+      - postgres
+      - -c
+      - wal_level=logical #required for MaterializedPostgreSQL
     # Uncomment to make changes in DB persistent
     #volumes:
     #  - ./volumes/postgres:/var/lib/postgresql/data
@@ -23,3 +27,25 @@ services:
       - FLYWAY_SCHEMAS=flyway,${POSTGRES_SCHEMA}
     depends_on:
       - postgres
+  # reference: https://github.com/ClickHouse/examples/blob/main/docker-compose-recipes/recipes/ch-and-postgres/docker-compose.yaml
+  clickhouse:
+    image: clickhouse/clickhouse-server
+    ports:
+      - 8123:8123
+      - 9000:9000
+    environment:
+      # Default user and database will be created using `init-defaults.sh` script
+      CLICKHOUSE_DB: destination
+      CLICKHOUSE_USER: user
+      CLICKHOUSE_PASSWORD: password
+    depends_on:
+      - postgres
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - 3000:3000
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_INSTALL_PLUGINS=grafana-clickhouse-datasource
