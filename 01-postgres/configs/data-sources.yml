@@ -1,0 +1,23 @@
+apiVersion: 1
+
+datasources:
+  - name: Postgres
+    type: postgres
+    url: postgres:5432
+    isDefault: true
+    user: ${POSTGRES_USER}
+    database: ${POSTGRES_DB}
+    secureJsonData:
+      password: ${POSTGRES_PASSWORD}
+    jsonData:
+      sslmode: disable
+
+  - name: Clickhouse
+    type: ClickHouse
+    url: clickhouse:8123
+    user: ${CLICKHOUSE_USER}
+    database: ${CLICKHOUSE_DB}
+    secureJsonData:
+      password: ${CLICKHOUSE_PASSWORD}
+    jsonData:
+      sslmode: disable

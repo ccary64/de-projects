@@ -33,19 +33,15 @@ services:
     ports:
       - 8123:8123
       - 9000:9000
-    environment:
-      # Default user and database will be created using `init-defaults.sh` script
-      CLICKHOUSE_DB: destination
-      CLICKHOUSE_USER: user
-      CLICKHOUSE_PASSWORD: password
+    env_file:
+      - .env
     depends_on:
       - postgres
   grafana:
     image: grafana/grafana:latest
     ports:
       - 3000:3000
-    environment:
-      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
-      - GF_AUTH_ANONYMOUS_ENABLED=true
-      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
-      - GF_INSTALL_PLUGINS=grafana-clickhouse-datasource
+    volumes:
+      - ./configs/data-sources.yml:/etc/grafana/provisioning/datasources/config.yml
+    env_file:
+      - .env
