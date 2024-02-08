@@ -10,7 +10,7 @@ services:
     env_file:
       - .env
   migrations:
-    image: flyway/flyway:latest
+    image: flyway/flyway:10.6
     command: -locations=filesystem:/flyway/sql -connectRetries=60 migrate
     volumes:
       - ./migrations:/flyway/sql
